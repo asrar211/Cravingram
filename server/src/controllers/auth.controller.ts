@@ -7,10 +7,11 @@ import jwt from "jsonwebtoken";
 const isProd = process.env.NODE_ENV === "production";
 
 const cookieSettings: CookieOptions = {
-  httpOnly: true,
-  secure: isProd,                
+   httpOnly: true,
+  secure: isProd,
   sameSite: isProd ? "none" : "lax",
   path: "/",
+  domain: isProd ? "cravingram.onrender.com" : undefined,
 };
 
 
