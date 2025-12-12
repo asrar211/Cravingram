@@ -13,5 +13,4 @@ export interface FoodPartnerAuthContextType {
     signup: (name: string, email: string, password: string) => Promise<void>;
     login: (email: string, password: string) => Promise<void>;
     logout: () => Promise<void>;
-    getFoodPartner: () => Promise<FoodPartner | null>;
 }
