@@ -1,10 +1,9 @@
 import axios from "axios";
 
-export const api  = axios.create({
+export const api = axios.create({
     baseURL: import.meta.env.VITE_API_URL || `https://cravingram.onrender.com/api/v1`,
     headers: {
         "Content-Type": "application/json",
     },
+    withCredentials: true, 
 });
-
-axios.defaults.withCredentials = true;

@@ -1,8 +1,18 @@
-import { Request, Response } from "express";
+import { Request, Response, CookieOptions } from "express";
 import { User } from "../models/user.model";
 import { FoodPartner } from "../models/foodPartner.model";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+
+const isProd = process.env.NODE_ENV === "production";
+
+const cookieSettings: CookieOptions = {
+  httpOnly: true,
+  secure: isProd,                
+  sameSite: isProd ? "none" : "lax",
+  path: "/",
+};
+
 
 export const registerUser = async (req: Request, res: Response) => {
   try {
@@ -27,11 +37,7 @@ export const registerUser = async (req: Request, res: Response) => {
       expiresIn: "7d",
     });
 
-    res.cookie("user_token", token, {
-      httpOnly: true,
-      sameSite: "none",
-      secure: true,
-    });
+    res.cookie("user_token", token, cookieSettings);
 
     return res.status(201).json({
       message: "User Registered Successfully",
@@ -54,19 +60,15 @@ export const loginUser = async (req: Request, res: Response) => {
     if (!user)
       return res.status(404).json({ message: "Invalid Credentials" });
 
-    const comparePassword = await bcrypt.compare(password, user.password);
-    if (!comparePassword)
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch)
       return res.status(400).json({ message: "Invalid Credentials" });
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET!, {
       expiresIn: "7d",
     });
 
-    res.cookie("user_token", token, {
-      httpOnly: true,
-      sameSite: "none",
-      secure: true,
-    });
+    res.cookie("user_token", token, cookieSettings);
 
     return res.status(200).json({
       message: "User Logged in Successfully",
@@ -80,7 +82,7 @@ export const loginUser = async (req: Request, res: Response) => {
 
 export const logoutUser = async (req: Request, res: Response) => {
   try {
-    res.clearCookie("user_token");
+    res.clearCookie("user_token", { path: "/" });
     return res.status(200).json({ message: "Logout successful" });
   } catch (err) {
     console.error(err);
@@ -88,6 +90,7 @@ export const logoutUser = async (req: Request, res: Response) => {
   }
 };
 
+// ===================== FOOD PARTNER AUTH ======================
 
 export const registerFoodPartner = async (req: Request, res: Response) => {
   try {
@@ -112,11 +115,7 @@ export const registerFoodPartner = async (req: Request, res: Response) => {
       expiresIn: "7d",
     });
 
-    res.cookie("partner_token", token, {
-      httpOnly: true,
-      sameSite: "none",
-      secure: true,
-    });
+    res.cookie("partner_token", token, cookieSettings);
 
     return res.status(201).json({
       message: "Food Partner Registered Successfully",
@@ -139,28 +138,19 @@ export const loginFoodPartner = async (req: Request, res: Response) => {
     if (!partner)
       return res.status(404).json({ message: "Invalid Credentials" });
 
-    const comparePassword = await bcrypt.compare(password, partner.password);
-    if (!comparePassword)
+    const isMatch = await bcrypt.compare(password, partner.password);
+    if (!isMatch)
       return res.status(400).json({ message: "Invalid Credentials" });
 
     const token = jwt.sign({ id: partner._id }, process.env.JWT_SECRET!, {
       expiresIn: "7d",
     });
 
-
-    res.cookie("partner_token", token, {
-      httpOnly: true,
-      sameSite: "none",
-      secure: true,
-    });
+    res.cookie("partner_token", token, cookieSettings);
 
     return res.status(200).json({
       message: "Food Partner Logged in Successfully",
-      foodPartner: {
-        id: partner._id,
-        name: partner.name,
-        email: partner.email,
-      },
+      foodPartner: { id: partner._id, name: partner.name, email: partner.email },
     });
   } catch (err) {
     console.error(err);
@@ -170,7 +160,7 @@ export const loginFoodPartner = async (req: Request, res: Response) => {
 
 export const logoutFoodPartner = async (req: Request, res: Response) => {
   try {
-    res.clearCookie("partner_token");
+    res.clearCookie("partner_token", { path: "/" });
     return res.status(200).json({ message: "Logout successful" });
   } catch (err) {
     console.error(err);
