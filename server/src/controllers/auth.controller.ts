@@ -29,7 +29,7 @@ export const registerUser = async (req: Request, res: Response) => {
 
     res.cookie("user_token", token, {
       httpOnly: true,
-      sameSite: "lax",
+      sameSite: "none",
       secure: true,
     });
 
@@ -64,7 +64,7 @@ export const loginUser = async (req: Request, res: Response) => {
 
     res.cookie("user_token", token, {
       httpOnly: true,
-      sameSite: "lax",
+      sameSite: "none",
       secure: true,
     });
 
@@ -114,7 +114,7 @@ export const registerFoodPartner = async (req: Request, res: Response) => {
 
     res.cookie("partner_token", token, {
       httpOnly: true,
-      sameSite: "lax",
+      sameSite: "none",
       secure: true,
     });
 
@@ -150,7 +150,7 @@ export const loginFoodPartner = async (req: Request, res: Response) => {
 
     res.cookie("partner_token", token, {
       httpOnly: true,
-      sameSite: "lax",
+      sameSite: "none",
       secure: true,
     });
 
