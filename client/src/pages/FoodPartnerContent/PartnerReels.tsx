@@ -15,6 +15,7 @@ export const PartnerReels = () => {
             video={item.videoUrl}
             foodPartner={item.foodPartner}
             likes={item.likes || []}
+            isActive={null}
           />
         </div>
       ))}

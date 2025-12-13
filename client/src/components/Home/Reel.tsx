@@ -18,7 +18,7 @@ interface ReelProps {
     name: string;
   };
   likes: string[];
-  isActive: boolean;
+  isActive: boolean | null;
 }
 
 export const Reel = ({
