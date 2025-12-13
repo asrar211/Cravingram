@@ -1,7 +1,13 @@
-import { IconUser, IconHeart, IconHeartFilled, IconVolumeOff, IconVolume } from "@tabler/icons-react";
+import {
+  IconUser,
+  IconHeart,
+  IconHeartFilled,
+  IconVolumeOff,
+  IconVolume,
+} from "@tabler/icons-react";
 import { useFoodItem } from "../../hooks/useFoodItem";
 import { useUserAuth } from "../../hooks/useUserAuth";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
 interface ReelProps {
   _id: string;
@@ -12,68 +18,80 @@ interface ReelProps {
     name: string;
   };
   likes: string[];
+  isActive: boolean;
 }
 
-export const Reel = ({ _id, description, video, foodPartner, likes = [] }: ReelProps) => {
+export const Reel = ({
+  _id,
+  description,
+  video,
+  foodPartner,
+  likes = [],
+  isActive,
+}: ReelProps) => {
   const { likeReel } = useFoodItem();
   const { user } = useUserAuth();
   const [muted, setMuted] = useState(true);
 
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+
+  useEffect(() => {
+    if (!videoRef.current) return;
+
+    if (isActive) {
+      videoRef.current.play().catch(() => {});
+    } else {
+      videoRef.current.pause();
+    }
+  }, [isActive]);
+
   const isLiked = likes.includes(user?._id || "");
 
-  const handleLike = async () => {
-    await likeReel(_id);
-  };
-
   return (
-    <div className="h-[92vh] w-full flex justify-center items-center relative">
-      
+    <div className="h-full w-full relative flex justify-center items-center bg-black">
       <video
-        autoPlay
+        ref={videoRef}
         muted={muted}
         loop
         playsInline
         src={video}
-        className="w-full max-h-[92vh] object-cover"
+        className="h-full w-full object-contain bg-black"
       />
-      {muted ? (
-        <button
-          onClick={() => setMuted(false)}
-          className="absolute bottom-0 right-0 bg-opacity-50 text-white px-2 py-1 rounded-md text-sm"
-        >
-        <IconVolumeOff size={25} className="bg-black rounded-full p-1"/>
-        </button>
-      ): (
-        <button
-          onClick={() => setMuted(true)}
-          className="absolute bottom-0 right-0 bg-opacity-50 text-white px-2 py-1 rounded-md text-sm"
-        >
-        <IconVolume size={25} className="bg-black rounded-full p-1"/>
-        </button>
-      )}
 
-      <div className="absolute bottom-0 left-5">
+      <button onClick={() => setMuted(!muted)} className="absolute bottom-24 right-5">
+        {muted ? (
+          <IconVolumeOff
+            size={32}
+            className="bg-black bg-opacity-60 text-white rounded-full p-1"
+          />
+        ) : (
+          <IconVolume
+            size={32}
+            className="bg-black bg-opacity-60 text-white rounded-full p-1"
+          />
+        )}
+      </button>
+
+      <div className="absolute bottom-30 left-5">
         <h4 className="text-white text-sm font-semibold flex items-center gap-2 pb-1">
-          <IconUser size={20} className="p-0.5 bg-black rounded-full" />
-          {foodPartner.name}
+          <IconUser size={20} className="bg-black p-0.5 rounded-full" />
+          {foodPartner?.name}
         </h4>
         <p className="text-white text-sm pr-10">{description}</p>
       </div>
 
       {user && (
-      <div className="absolute bottom-35 right-5 flex flex-col items-center">
-        <button onClick={handleLike} className="text-white">
-          {isLiked ? (
-            <IconHeartFilled size={30} className="text-red-500" />
-          ) : (
-            <IconHeart size={30} color="red"/>
-          )}
-        </button>
-        <p className="text-red-900 text-xs">{likes.length}</p>
-      </div>
+        <div className="absolute bottom-35 right-5 flex flex-col items-center">
+          <button onClick={() => likeReel(_id)} className="text-white">
+            {isLiked ? (
+              <IconHeartFilled size={32} className="text-red-500" />
+            ) : (
+              <IconHeart size={32} color="red" />
+            )}
+          </button>
+          <p className="text-white text-xs">{likes.length}</p>
+        </div>
       )}
-      
-
     </div>
   );
 };
