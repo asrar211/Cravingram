@@ -66,7 +66,7 @@ export const PartnerProfile = () => {
         {foodItems.map((item) => (
           <div key={item._id} className="relative">
             <video src={item.videoUrl} muted
-            className="h-40 object-cover"/>
+            className="h-40 w-25 object-cover"/>
             <p className="text-xs absolute bottom-0 left-1 font-semibold flex gap-1 items-center">{item.likes.length} <IconHeartFilled size={10}/></p>
           </div>
         ))}

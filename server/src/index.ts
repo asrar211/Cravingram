@@ -10,8 +10,8 @@ const app = express();
 connectDB();
 
 const allowedOrigins = [
-  "http://localhost:5173",
   "https://cravingram.vercel.app",
+  "http://localhost:5173",
 ];
 
 app.use(
